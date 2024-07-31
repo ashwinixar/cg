@@ -67,7 +67,7 @@ void Graphics::SetBrushColor(float r, float g, float b, float a)
 void Graphics::ClearScreen()
 {
 	//renderTarget->Clear(D2D1::ColorF(1.0f, 1.0f, 1.0f));
-	renderTarget->Clear(D2D1::ColorF(0.2f, 0.5f, 0.8f));
+	renderTarget->Clear(D2D1::ColorF(0.0f, 0.5f, 0.8f));
 }
 
 void Graphics::DrawPoint(float x, float y)

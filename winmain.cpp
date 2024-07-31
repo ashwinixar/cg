@@ -8,45 +8,6 @@
 
 Graphics* graphics;
 
-float y = 0.0f;
-float ySpeed = 0.0f;
-void update()
-{
-	ySpeed += 1.0f;
-	y += ySpeed;
-	if (y > 600) {
-		y = 600;
-		ySpeed = -30.0f;
-	}
-}
-
-void render()
-{
-	graphics->BeginDraw();
-	graphics->ClearScreen();
-
-	//Graphics coding starts here
-	
-	//graphics->DrawPoint(300.0f, y); //Call along with update()
-	//graphics->LineDDA(400, 100, 500, 200);
-	//graphics->LineBresenham(200, 200, 300, 300);
-	//graphics->LineMidpoint(100, 200, 200, 300);
-	//graphics->CircleMidpoint(200, 200, 100);
-	//graphics->EllipseMidpoint(300, 300, 50, 20);
-	/*
-	std::vector<std::pair<float, float>> points;
-	points.push_back({ 100, 100 });
-	points.push_back({ 200, 100 });
-	points.push_back({ 150, 150 });
-	graphics->Polygon(points);
-	*/
-	graphics->LineDDA_AA(50, 50, 80, 150);
-	//graphics->LineMidpoint_AA(80, 50, 110, 150);
-	//Graphics coding ends here
-
-	graphics->EndDraw();
-}
-
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	if (uMsg == WM_DESTROY)
@@ -54,26 +15,19 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		PostQuitMessage(0);
 		return 0;
 	}
-	/*
 	if (uMsg == WM_PAINT)
 	{
 		graphics->BeginDraw();
 		graphics->ClearScreen();
 
 		//Graphics coding starts here
-		//graphics->LineBresenham(200, 200, 300, 300);
-		//graphics->CircleMidpoint(200, 200, 100);
-		//graphics->EllipseMidpoint(300, 300, 50, 20);
-		std::vector<std::pair<int, int>> points;
-		points.push_back({ 100, 100 });
-		points.push_back({ 200, 100 });
-		points.push_back({ 150, 150 });
-		graphics->Polygon(points);
+
+		graphics->LineDDA_SSAA3x3(50, 50, 80, 150);
+		
 		//Graphics coding ends here
 
 		graphics->EndDraw();
 	}
-	*/
 	return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
 
@@ -117,15 +71,14 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	}
 
 	ShowWindow(windowHandle, nShowCmd);
-
-	/*
+	
 	MSG message;
 	while (GetMessage(&message, NULL, 0, 0))
 	{
 		DispatchMessage(&message);
 	}
-	*/
 	
+	/*
 	MSG message;
 	message.message = WM_NULL;
 	while (message.message != WM_QUIT)
@@ -134,12 +87,12 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 			DispatchMessage(&message);
 		else
 		{
-			//update(); //Update Graphics
+			update(); //Update Graphics
 			render(); //Render Graphics
 		}
 			
 	}
-
+	*/
 	delete graphics;
 
 	return 0;
