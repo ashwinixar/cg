@@ -1,7 +1,5 @@
 #include "Graphics.h"
 
-#define ROUND(a) ((int)(a + 0.5))
-
 Graphics::Graphics()
 {
 	factory = NULL;
@@ -81,7 +79,25 @@ void Graphics::DrawPoints(std::vector<std::pair<float, float>> points, std::vect
 	SetBrushColor(oldBrushColor);
 }
 
-void Graphics::LineDDA_AA(float xa, float ya, float xb, float yb)
+void Graphics::LineDDA(float xa, float ya, float xb, float yb)
+{
+	float dx = xb - xa, dy = yb - ya, steps;
+	float xInc, yInc, x = xa, y = ya;
+
+	if (abs(dx) > abs(dy)) steps = abs(dx);
+	else steps = abs(dy);
+	xInc = dx / steps;
+	yInc = dy / steps;
+	DrawPoint(ROUND(x), ROUND(y));
+	for (int k = 0; k < steps; k++)
+	{
+		x += xInc;
+		y += yInc;
+		DrawPoint(ROUND(x), ROUND(y));
+	}
+}
+
+void Graphics::LineDDA_SSAA3x3(float xa, float ya, float xb, float yb)
 {
 	std::vector<std::pair<float, float>> points;
 	std::vector<D2D1::ColorF> intensity;
@@ -105,24 +121,6 @@ void Graphics::LineDDA_AA(float xa, float ya, float xb, float yb)
 		intensity.push_back(pixel_intensity);
 	}
 	DrawPoints(points, intensity);
-}
-
-void Graphics::LineDDA(float xa, float ya, float xb, float yb)
-{
-	float dx = xb - xa, dy = yb - ya, steps;
-	float xInc, yInc, x = xa, y = ya;
-
-	if (abs(dx) > abs(dy)) steps = abs(dx);
-	else steps = abs(dy);
-	xInc = dx / steps;
-	yInc = dy / steps;
-	DrawPoint(ROUND(x), ROUND(y));
-	for (int k = 0; k < steps; k++)
-	{
-		x += xInc;
-		y += yInc;
-		DrawPoint(ROUND(x), ROUND(y));
-	}
 }
 
 void Graphics::LineBresenham(float xa, float ya, float xb, float yb)
@@ -183,8 +181,8 @@ void Graphics::LineMidpoint(float xa, float ya, float xb, float yb)
 		swapped = true;
 	}
 	else d = dy - (dx / 2);
-	
-	if(!swapped) DrawPoint(x, y);
+
+	if (!swapped) DrawPoint(x, y);
 	else DrawPoint(y, x);
 	while (x < xb)
 	{
@@ -202,7 +200,7 @@ void Graphics::LineMidpoint(float xa, float ya, float xb, float yb)
 	else DrawPoint(yb, xb);
 }
 
-void Graphics::LineMidpoint_AA(float xa, float ya, float xb, float yb)
+void Graphics::LineMidpoint_GuptaSproullAA(float xa, float ya, float xb, float yb)
 {
 	float dx = xb - xa;
 	float dy = yb - ya;
@@ -271,7 +269,7 @@ void Graphics::CircleMidpoint(float xc, float yc, float r)
 	float x = 0;
 	float y = r;
 	float p = 1 - r;
-	
+
 	CirclePlotPoints(xc, yc, x, y);
 
 	while (x < y)
@@ -347,19 +345,11 @@ void Graphics::EllipseMidpoint(float xc, float yc, float rx, float ry)
 
 void Graphics::Polygon(std::vector<std::pair<float, float>> points)
 {
-	std::pair<float, float> point = points.at(0);
-	float xa = point.first;
-	float ya = point.second;
-	for (std::pair<float, float> point : points)
+	for (int it = 1; it < points.size(); it++)
 	{
-		float xb = point.first;
-		float yb = point.second;
-		LineDDA(xa, ya, xb, yb);
-		xa = xb;
-		ya = yb;
+		LineDDA(points[it - 1].first, points[it - 1].second, points[it].first, points[it].second);
 	}
-	point = points.at(0);
-	LineDDA(xa, ya, point.first, point.second);
+	LineDDA(points.back().first, points.back().second, points[0].first, points[0].second);
 }
 
 void Graphics::BoundaryFill(float x, float y, D2D1::ColorF fill, D2D1::ColorF boundary, bool Fill8)
@@ -375,9 +365,7 @@ void Graphics::BoundaryFill(float x, float y, D2D1::ColorF fill, D2D1::ColorF bo
 
 void Graphics::BoundaryFill4(float x, float y, D2D1::ColorF fill, D2D1::ColorF boundary)
 {
-	D2D1_COLOR_F current;
-
-	
+	//D2D1_COLOR_F current;
 }
 
 void Graphics::BoundaryFill8(float x, float y, D2D1::ColorF fill, D2D1::ColorF boundary)

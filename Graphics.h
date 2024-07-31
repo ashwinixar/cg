@@ -3,6 +3,8 @@
 #include <d2d1.h>
 #include <vector>
 
+#define ROUND(a) ((int)(a + 0.5))
+
 class Graphics
 {
 	ID2D1Factory* factory;
@@ -33,11 +35,11 @@ public:
 	void DrawPoint(float x, float y);
 	void DrawPoints(std::vector<std::pair<float, float>> points, std::vector<D2D1::ColorF> intensity);
 
-	void LineDDA_AA(float xa, float ya, float xb, float yb);
 	void LineDDA(float xa, float ya, float xb, float yb);
+	void LineDDA_SSAA3x3(float xa, float ya, float xb, float yb);
 	void LineBresenham(float xa, float ya, float xb, float yb);
 	void LineMidpoint(float xa, float ya, float xb, float yb);
-	void LineMidpoint_AA(float xa, float ya, float xb, float yb);
+	void LineMidpoint_GuptaSproullAA(float xa, float ya, float xb, float yb);
 	void CircleMidpoint(float xc, float yc, float r);
 	void EllipseMidpoint(float xc, float yc, float rx, float ry);
 	void Polygon(std::vector<std::pair<float, float>> points);
