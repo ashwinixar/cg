@@ -1,6 +1,7 @@
 #pragma once
 
 #include <d2d1.h>
+#include <wincodec.h>
 #include <vector>
 
 #define ROUND(a) ((int)(a + 0.5))
@@ -10,6 +11,9 @@ class Graphics
 	ID2D1Factory* factory;
 	ID2D1HwndRenderTarget* renderTarget;
 	ID2D1SolidColorBrush* brush;
+	ID2D1Bitmap* bitmap;
+
+	D2D1_SIZE_U size;
 
 	D2D1_COLOR_F GetBrushColor();
 	void SetBrushColor(D2D1_COLOR_F color);
@@ -44,4 +48,6 @@ public:
 	void EllipseMidpoint(float xc, float yc, float rx, float ry);
 	void Polygon(std::vector<std::pair<float, float>> points);
 	void BoundaryFill(float x, float y, D2D1::ColorF fill, D2D1::ColorF boundary, bool Fill8);
+
+	void CreateBitmap();
 };

@@ -5,6 +5,8 @@ Graphics::Graphics()
 	factory = NULL;
 	renderTarget = NULL;
 	brush = NULL;
+	bitmap = NULL;
+	size = D2D1::SizeU(0, 0);
 }
 
 Graphics::~Graphics()
@@ -12,6 +14,7 @@ Graphics::~Graphics()
 	if (factory) factory->Release();
 	if (renderTarget) renderTarget->Release();
 	if (brush) brush->Release();
+	if (bitmap) bitmap->Release();
 }
 
 bool Graphics::Init(HWND windowHandle)
@@ -21,15 +24,19 @@ bool Graphics::Init(HWND windowHandle)
 
 	RECT rect;
 	GetClientRect(windowHandle, &rect);
+	size = D2D1::SizeU(
+		rect.right - rect.left, 
+		rect.bottom - rect.top
+	);
 
 	result = factory->CreateHwndRenderTarget(
 		D2D1::RenderTargetProperties(),
 		D2D1::HwndRenderTargetProperties(
-			windowHandle, D2D1::SizeU(rect.right - rect.left, rect.bottom - rect.top)),
+			windowHandle, 
+			size),
 		&renderTarget);
-
 	if (result != S_OK) return false;
-
+	
 	result = renderTarget->CreateSolidColorBrush(
 		D2D1::ColorF(
 			0.0f, //r
@@ -37,7 +44,6 @@ bool Graphics::Init(HWND windowHandle)
 			0.0f, //b
 			1.0f), //a
 		&brush);
-
 	if (result != S_OK) return false;
 
 	return true;
@@ -60,7 +66,8 @@ void Graphics::SetBrushColor(float r, float g, float b, float a)
 
 void Graphics::ClearScreen()
 {
-	renderTarget->Clear(D2D1::ColorF(1.0f, 1.0f, 1.0f));
+	//renderTarget->Clear(D2D1::ColorF(1.0f, 1.0f, 1.0f));
+	renderTarget->Clear(D2D1::ColorF(0.2f, 0.5f, 0.8f));
 }
 
 void Graphics::DrawPoint(float x, float y)
@@ -99,6 +106,7 @@ void Graphics::LineDDA(float xa, float ya, float xb, float yb)
 
 void Graphics::LineDDA_SSAA3x3(float xa, float ya, float xb, float yb)
 {
+	//TODO
 	std::vector<std::pair<float, float>> points;
 	std::vector<D2D1::ColorF> intensity;
 
@@ -181,13 +189,13 @@ void Graphics::LineMidpoint(float xa, float ya, float xb, float yb)
 		swapped = true;
 	}
 	else d = dy - (dx / 2);
-
-	if (!swapped) DrawPoint(x, y);
+	
+	if(!swapped) DrawPoint(x, y);
 	else DrawPoint(y, x);
 	while (x < xb)
 	{
 		x++;
-		if (d >= 0)
+		if (d > 0)
 		{
 			y++;
 			d = d + (dy - dx);
@@ -202,6 +210,7 @@ void Graphics::LineMidpoint(float xa, float ya, float xb, float yb)
 
 void Graphics::LineMidpoint_GuptaSproullAA(float xa, float ya, float xb, float yb)
 {
+	//TODO
 	float dx = xb - xa;
 	float dy = yb - ya;
 	float x = xa, y = ya;
@@ -269,7 +278,7 @@ void Graphics::CircleMidpoint(float xc, float yc, float r)
 	float x = 0;
 	float y = r;
 	float p = 1 - r;
-
+	
 	CirclePlotPoints(xc, yc, x, y);
 
 	while (x < y)
@@ -365,10 +374,30 @@ void Graphics::BoundaryFill(float x, float y, D2D1::ColorF fill, D2D1::ColorF bo
 
 void Graphics::BoundaryFill4(float x, float y, D2D1::ColorF fill, D2D1::ColorF boundary)
 {
+	//TODO
 	//D2D1_COLOR_F current;
 }
 
 void Graphics::BoundaryFill8(float x, float y, D2D1::ColorF fill, D2D1::ColorF boundary)
 {
+	//TODO
+}
 
+void Graphics::CreateBitmap()
+{
+	D2D1_BITMAP_PROPERTIES bitmapProperties = D2D1::BitmapProperties(
+		D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_IGNORE)
+	);
+	renderTarget->CreateBitmap(
+		size,
+		nullptr, 
+		0, 
+		bitmapProperties, 
+		&bitmap
+	);
+	
+	ID3D10Texture2D* d3dTexture;
+	IDXGISurface* sharedSurface;
+	
+	//TODO
 }
